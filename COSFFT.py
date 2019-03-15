@@ -8,73 +8,68 @@ r     = 0.1        # risk-free rate
 mu    = r          # model parameters
 sigma = 0.3    
 S0    = 100        # Today's stock price
-T     = 0.25       # Time to expiry in years
+tau     = 0.25       # Time to expiry in years
 q     = 0
 
 #K=70:130
-C_BS,p,d1,d2 = blackS(S0,K,r,T,sigma,q)
-#subplot(2,1,1)
-#plot(K,C_BS,'r')
-#hold on
+C_BS,p,d1,d2 = blackS(S0,K,r,tau,sigma,q)
 
-## Step 1. Setup
+
+## Step 1. Setup --------------------------------------------------------------
 scalea = -10 # how many standard deviations?
 scaleb = 10 
-a      = scalea*np.sqrt(T)*sigma
-b      = scaleb*np.sqrt(T)*sigma
+a      = scalea*np.sqrt(tau)*sigma # lowerBound
+b      = scaleb*np.sqrt(tau)*sigma
 bma    = b-a
 N      = 50
 k      = np.arange(0, N, dtype=np.float)
-gamma  = k*np.pi/bma
+u      = k * np.pi / bma
 K      = np.arange(70, 131, dtype=np.float)
+a      = 0.15  # Initial vola of underyling at time 0 (also called u0)
+bj     = 0.5   # The speed of mean reversion also called lambda b1 =kappa+lam-rho*sigma
+v_bar  = 0.05 # mean level of variance
+uj     = 0.5 # in the original paper it is 0.5 and -0.5 -> *2 equals 1, so may be not relevant (not included in Fang papr)
+volvol = 0.05 # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+rho = 0.2   #covariance between the log stock and the variance process
 
-## Step 2: Prepare Uk terms
-Uk = 2/bma * ( cosSerExp(a,b,0,b,k) - cosSer1(a,b,0,b,k) )
-charfn = cf(gamma, mu, sigma, T) # phi
+## Step 2: Prepare terms ------------------------------------------------------
+# Value for a Call
+Vk = 2 / bma * (cosSerExp(a,b,0,b,k) - cosSer1(a,b,0,b,k))
 
+# Integrated Function
+u = k * np.pi / bma
+#characteristicFunction = charFuncBSM(u, mu, sigma, T)
+characteristicFunction = charFuncHeston(mu, u, tau, a, bj, v_bar, uj, rho, volvol)
+
+# Assign Space for Call Prices
 C_COS = np.zeros((np.size(K)))
 
-## Step 3: Calculate prices
+## Step 3: Calculate prices ---------------------------------------------------
 for m in range(0,np.size(K)):
     x  = np.log(S0/K[m])
-    Fk = np.real(np.multiply(charfn, np.exp(1j*k*np.pi*(x-a)/bma)))
+    addIntegratedTerm = np.exp(1j * u * (x-a))
+    Fk = np.real(np.multiply(characteristicFunction, addIntegratedTerm)) 
     Fk[0]=0.5*Fk[0]						# weigh first term 1/2
-    C_COS[m] = K[m] * np.sum(np.multiply(Fk,Uk)) * np.exp(-r*T)
-
-#subplot(2,1,1)
-#hold on
-#plot(K,C_COS,'k:')
-#subplot(2,1,2)
-#hold on
-#semilogy(K,abs(C_BS-C_COS)./C_BS,'k--')
-#axis([S0*.7 S0*1.3 1E-16 1])
-
-
-## ========== Private functions of the model ==========
-def cf(s,mu,sigma, T):
+    C_COS[m] = K[m] * np.sum(np.multiply(Fk,Vk)) * np.exp(-r*T)
+    
+#### --------------------------------------------------------------------------
+## ========== Functions of the model ==========
+def charFuncBSM(s,mu,sigma, tau):
     # phi = E[exp(ius)]
-    # In the BS-Case, this is
-    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))  #vector-compatible in s
+    # Characteristic Function for the Black Scholes Model
+    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(tau,s) - 0.5 * np.power(sigma,2) * tau * np.power(s,2))  #vector-compatible in s
     return phi
 
+def charFuncHeston(r, u, tau, a, bj, v, uj, rho, sigma):
+    d = np.sqrt(np.power(rho * sigma * u * 1j, 2) - np.power(sigma,2) * (2*uj*u*1j - np.power(u,2)))
+    g = (bj - rho*sigma*u*1j + d) / (bj - rho*sigma*u*1j - d)
+    C = r * u * 1j * tau + a/np.power(sigma,2) * ( (bj - rho * sigma * 1j + d) * tau - 2 * np.log((1 - g * np.exp(d * tau)) / (1-g) ))
+    D = (bj - rho * sigma * u * 1j + d) / np.power(sigma,2) * ((1 - np.exp(d * tau)) / (1 - g * np.exp(d * tau)))
+    phi = np.exp(C + D * v + 1j * u)
+    return phi
 
 def blackS(S,X,r,T,sigma,q):
     #Calculates Black-Scholes european option prices.
-    #
-    #  Usage:      [c,p,d1,d2] = blackS( S,X,r,T,sigma,[q] )
-    #
-    #  Inputs:     S      scalar or nx1 vector, possible current stock prices
-    #              X      scalar or nx1 vector, strike price
-    #              r      scalar, riskfree interest rate (continuously compounded)
-    #              T      scalar, time to expiry of option
-    #              sigma  scalar or nx1 vector, std in stock price evolution
-    #              [q]    scalar, dividend yield (continuously compounded), optional
-    #
-    #  Output:     c      nx1 vector, call option prices
-    #              p      nx1 vector, put option prices
-    #              d1     nx1 vector
-    #              d2     nx1 vector
-    #
     #  Peter.Gruber@unisg.ch, February 2007
     #  Based on code by Paul.Soderlind@unisg.ch
     #if args==6:     # if dividend is specified, correct for it
@@ -87,11 +82,9 @@ def blackS(S,X,r,T,sigma,q):
     
     return c,p,d1,d2
 
-
 def stdnCdf(a):
     cdf = 0.5 + 0.5 * erf(a / np.sqrt(2))
     return cdf
-
 
 def ftcall(model, charfn, data):
     alpha = model.FFT.alpha
@@ -100,7 +93,6 @@ def ftcall(model, charfn, data):
     nu = model.FFT.nu
     phi = np.divide( np.multiply(np.exp(-r*tau), charfn), np.multiply((alpha + 1j*nu), (alpha + 1 + 1j*nu)))
     return phi
-
 
 def cosSerExp(a,b,c,d,k):
       # cosine series coefficients of exp(y) Oosterle (22)
@@ -111,7 +103,6 @@ def cosSerExp(a,b,c,d,k):
     uu  = k*np.pi/bma
     chi = np.multiply(np.divide(1, (1 + np.power(uu,2))), (np.cos(uu * (d-a)) * np.exp(d) - np.cos(uu * (c-a)) * np.exp(c) + np.multiply(uu,np.sin(uu*(d-a)))*np.exp(d)-np.multiply(uu,np.sin(uu*(c-a)))*np.exp(c)))
     return chi
-
 
 def cosSer1(a,b,c,d,k):
   # cosine series coefficients of 1 Oosterle (23)
