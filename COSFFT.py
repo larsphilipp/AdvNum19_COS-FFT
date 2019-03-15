@@ -47,7 +47,7 @@ C_COS = np.zeros((np.size(K)))
 ## Step 3: Calculate prices ---------------------------------------------------
 for m in range(0,np.size(K)):
     x  = np.log(S0/K[m])
-    addIntegratedTerm = np.exp(1j * u * (x-a))
+    addIntegratedTerm = np.exp(1j * u * (x-a)) # not needed unter Heston (is already included) could be moved out (see Fang p.22)
     Fk = np.real(np.multiply(characteristicFunction, addIntegratedTerm)) 
     Fk[0]=0.5*Fk[0]						# weigh first term 1/2
     C_COS[m] = K[m] * np.sum(np.multiply(Fk,Vk)) * np.exp(-r*T)
