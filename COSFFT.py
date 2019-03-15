@@ -1,9 +1,7 @@
 # COS-FFT for Heston Model
 
 import numpy as np
-import pandas as pd
 from scipy.special import erf
-import cmath
 
 ## Input Parameters
 r     = 0.1        # risk-free rate
@@ -11,9 +9,10 @@ mu    = r          # model parameters
 sigma = 0.3    
 S0    = 100        # Today's stock price
 T     = 0.25       # Time to expiry in years
+q     = 0
 
 #K=70:130
-#[C_BS,p,d1,d2] = blackS(S0,K,r,T,sigma)
+C_BS,p,d1,d2 = blackS(S0,K,r,T,sigma,q)
 #subplot(2,1,1)
 #plot(K,C_BS,'r')
 #hold on
@@ -31,7 +30,7 @@ K      = np.arange(70, 131, dtype=np.float)
 
 ## Step 2: Prepare Uk terms
 Uk = 2/bma * ( cosSerExp(a,b,0,b,k) - cosSer1(a,b,0,b,k) )
-charfn = cf(gamma,mu,sigma, T) # phi
+charfn = cf(gamma, mu, sigma, T) # phi
 
 C_COS = np.zeros((np.size(K)))
 
@@ -59,32 +58,34 @@ def cf(s,mu,sigma, T):
     return phi
 
 
-#def  [c,p,d1,d2] = blackS(S,X,r,T,sigma,q)
-##Calculates Black-Scholes european option prices.
-##
-##  Usage:      [c,p,d1,d2] = blackS( S,X,r,T,sigma,[q] )
-##
-##  Inputs:     S      scalar or nx1 vector, possible current stock prices
-##              X      scalar or nx1 vector, strike price
-##              r      scalar, riskfree interest rate (continuously compounded)
-##              T      scalar, time to expiry of option
-##              sigma  scalar or nx1 vector, std in stock price evolution
-##              [q]    scalar, dividend yield (continuously compounded), optional
-##
-##  Output:     c      nx1 vector, call option prices
-##              p      nx1 vector, put option prices
-##              d1     nx1 vector
-##              d2     nx1 vector
-##
-##  Peter.Gruber@unisg.ch, February 2007
-##  Based on code by Paul.Soderlind@unisg.ch
-#if nargin==6     # if dividend is specified, correct for it
-#    S = S * exp(-q*T)
-#
-#d1 = ( log(S./X) + (r+1/2*sigma.^2)*T ) ./ (sigma*sqrt(T))
-#d2 = d1 - sigma*sqrt(T)
-#c  = S.*stdnCdf(d1) - X.*exp(-r*T).*stdnCdf(d2)
-#p  = c + X.*exp(-r*T) - S                  #put-call parity
+def blackS(S,X,r,T,sigma,q):
+    #Calculates Black-Scholes european option prices.
+    #
+    #  Usage:      [c,p,d1,d2] = blackS( S,X,r,T,sigma,[q] )
+    #
+    #  Inputs:     S      scalar or nx1 vector, possible current stock prices
+    #              X      scalar or nx1 vector, strike price
+    #              r      scalar, riskfree interest rate (continuously compounded)
+    #              T      scalar, time to expiry of option
+    #              sigma  scalar or nx1 vector, std in stock price evolution
+    #              [q]    scalar, dividend yield (continuously compounded), optional
+    #
+    #  Output:     c      nx1 vector, call option prices
+    #              p      nx1 vector, put option prices
+    #              d1     nx1 vector
+    #              d2     nx1 vector
+    #
+    #  Peter.Gruber@unisg.ch, February 2007
+    #  Based on code by Paul.Soderlind@unisg.ch
+    #if args==6:     # if dividend is specified, correct for it
+    S = S * np.exp(-q*T)
+    
+    d1 = np.divide( ( np.log(np.divide(S,X) ) + (r+1/2* np.power(sigma,2))*T ), (sigma*np.sqrt(T)) )
+    d2 = d1 - sigma*np.sqrt(T)
+    c  = np.multiply(S, stdnCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r*T)), stdnCdf(d2))
+    p  = c + np.multiply(X, np.exp(-r*T)) - S                  #put-call parity
+    
+    return c,p,d1,d2
 
 
 def stdnCdf(a):
@@ -108,7 +109,7 @@ def cosSerExp(a,b,c,d,k):
       #           k   ... FFT.Nx1 values of k
     bma = b-a
     uu  = k*np.pi/bma
-    chi = np.multiply(np.divide(1, (1 + np.power(uu,2))), (np.cos(uu * (d-a)) * np.exp(d) - np.cos(uu * (c-a)) * np.exp(c) + np.multiply(uu,np.sin(uu*(d-a))*np.exp(d)-np.multiply(uu,np.sin(uu*(c-a)))*np.exp(c))))
+    chi = np.multiply(np.divide(1, (1 + np.power(uu,2))), (np.cos(uu * (d-a)) * np.exp(d) - np.cos(uu * (c-a)) * np.exp(c) + np.multiply(uu,np.sin(uu*(d-a)))*np.exp(d)-np.multiply(uu,np.sin(uu*(c-a)))*np.exp(c)))
     return chi
 
 
