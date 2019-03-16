@@ -15,29 +15,29 @@ from scipy.special import erf
 
 # ========================= FUNCTIONS OF THE MODEL ========================
 
-def charFuncBSM(s,mu,sigma, tau):
+def charFuncBSM(s,mu,sigma, T):
     # phi = E[exp(ius)]
-    # Characteristic Function for the Black Scholes Model
-    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(tau,s) - 0.5 * np.power(sigma,2) * tau * np.power(s,2))  #vector-compatible in s
+    # In the BS-Case, this is
+    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))  #vector-compatible in s
     return phi
 
 def charFuncHeston(r, u, tau, a, bj, v, uj, rho, sigma):
-    d = np.sqrt(np.power(rho * sigma * u * 1j, 2) - np.power(sigma,2) * (2*uj*u*1j - np.power(u,2)))
-    g = (bj - rho*sigma*u*1j + d) / (bj - rho*sigma*u*1j - d)
+    d = np.sqrt(np.power(rho * sigma * u * 1j, 2) - np.power(sigma,2) * (2 * uj * u * 1j - np.power(u,2)))
+    g = (bj - rho * sigma * u * 1j + d) / (bj - rho * sigma * u * 1j - d)
     C = r * u * 1j * tau + a/np.power(sigma,2) * ( (bj - rho * sigma * 1j + d) * tau - 2 * np.log((1 - g * np.exp(d * tau)) / (1-g) ))
     D = (bj - rho * sigma * u * 1j + d) / np.power(sigma,2) * ((1 - np.exp(d * tau)) / (1 - g * np.exp(d * tau)))
     phi = np.exp(C + D * v + 1j * u)
     return phi
 
-def blackS(S,X,r,T,sigma,q):
+def blackS(S, X, r, T, sigma, q):
     #Calculates Black-Scholes european option prices.
     #  Peter.Gruber@unisg.ch, February 2007
     #  Based on code by Paul.Soderlind@unisg.ch
-    #if args==6:     # if dividend is specified, correct for it
-    S = S * np.exp(-q*T)
+    #if arg == 6:     # if dividend is specified, correct for it
+    S = S * np.exp(-q * T)
     
-    d1 = np.divide( ( np.log(np.divide(S,X) ) + (r+1/2* np.power(sigma,2))*T ), (sigma*np.sqrt(T)) )
-    d2 = d1 - sigma*np.sqrt(T)
+    d1 = np.divide( ( np.log(np.divide(S, X) ) + (r + 1/2 * np.power(sigma, 2)) * T ), ( sigma * np.sqrt(T)) )
+    d2 = d1 - sigma * np.sqrt(T)
     c  = np.multiply(S, stdnCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r*T)), stdnCdf(d2))
     p  = c + np.multiply(X, np.exp(-r*T)) - S                  #put-call parity
     
