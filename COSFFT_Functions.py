@@ -1,10 +1,20 @@
-#### --------------------------------------------------------------------------
+# ============================== INFORMATION ==============================
 
+# Title:       COS-FFT for Heston Model - FUNCTIONS
+# Authors:
+# Date:
+
+
+# ============================== PREPARATION ==============================
+
+# Import libraries
 import numpy as np
 from scipy import special
 from scipy.special import erf
 
-## ========== Functions of the model ==========
+
+# ========================= FUNCTIONS OF THE MODEL ========================
+
 def charFuncBSM(s,mu,sigma, tau):
     # phi = E[exp(ius)]
     # Characteristic Function for the Black Scholes Model
