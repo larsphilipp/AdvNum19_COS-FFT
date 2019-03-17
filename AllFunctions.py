@@ -70,7 +70,7 @@ def charFuncHeston(r, u, tau, a, bj, v, uj, rho, volvol):
     return phi
 
 def charFuncHestonFO(mu, u, tau, u0, bj, v_bar, uj, rho, volvol):
-    d = np.sqrt(np.power(bj - rho * volvol * u * 1j, 2) - np.power(volvol,2) * (np.power(u,2) + u * 1j))
+    d = np.sqrt(np.power(bj - rho * volvol * u * 1j, 2) + np.power(volvol,2) * (np.power(u,2) + u * 1j))
     g = (bj - rho * volvol * u * 1j - d) / (bj - rho * volvol * u * 1j + d)
     C = np.divide(bj * v_bar, np.power(volvol,2)) * ( (bj - rho * volvol * 1j * u - d) * tau - 2 * np.log(np.divide((1 - g * np.exp((-d) * tau)) , (1-g)) ))
     D = mu * u * 1j * tau + u0 / np.power(volvol,2) * ((1 - np.exp((-d) * tau)) / (1 - g * np.exp((-d) * tau))) * (bj - rho * volvol * u * 1j - d) 
