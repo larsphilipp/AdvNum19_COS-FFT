@@ -61,19 +61,11 @@ def charFuncBSM(s,mu,sigma, T):
     phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))  #vector-compatible in s
     return phi
 
-def charFuncHeston(r, u, tau, a, bj, v, uj, rho, volvol):
-    d = np.sqrt(np.power(rho * volvol * u * 1j - bj, 2) - np.power(volvol,2) * (2 * uj * u * 1j - np.power(u,2)))
-    g = (bj - rho * volvol * u * 1j + d) / (bj - rho * volvol * u * 1j - d)
-    C = r * u * 1j * tau + a/np.power(volvol,2) * ( (bj - rho * volvol * 1j + d) * tau - 2 * np.log((1 - g * np.exp(d * tau)) / (1-g) ))
-    D = (bj - rho * volvol * u * 1j + d) / np.power(volvol,2) * ((1 - np.exp(d * tau)) / (1 - g * np.exp(d * tau)))
-    phi = np.exp(C + D * v + 1j * u)
-    return phi
-
-def charFuncHestonFO(mu, u, tau, u0, bj, v_bar, uj, rho, volvol):
-    d = np.sqrt(np.power(bj - rho * volvol * u * 1j, 2) + np.power(volvol,2) * (np.power(u,2) + u * 1j))
-    g = (bj - rho * volvol * u * 1j - d) / (bj - rho * volvol * u * 1j + d)
-    C = np.divide(bj * v_bar, np.power(volvol,2)) * ( (bj - rho * volvol * 1j * u - d) * tau - 2 * np.log(np.divide((1 - g * np.exp((-d) * tau)) , (1-g)) ))
-    D = mu * u * 1j * tau + u0 / np.power(volvol,2) * ((1 - np.exp((-d) * tau)) / (1 - g * np.exp((-d) * tau))) * (bj - rho * volvol * u * 1j - d) 
+def charFuncHestonFO(mu, r, u, tau, sigma, bj, uj, rho, volvol):
+    d = np.sqrt(np.power(bj - 1j * rho * volvol * u, 2) + np.power(volvol,2) * (np.power(u,2) + u * 1j))
+    g = (bj - 1j * rho * volvol * u - d) / (bj - 1j * rho * volvol * u + d)
+    C = np.divide(bj * mu, np.power(volvol,2)) * ( (bj - 1j * rho * volvol * u - d) * tau - 2 * np.log(np.divide((1 - g * np.exp(-d * tau)) , (1-g)) ))
+    D = 1j * r * u * tau + sigma / np.power(volvol,2) * (np.divide((1 - np.exp(-d * tau)), (1 - g * np.exp(-d * tau)))) * (bj - 1j * rho * volvol * u - d) 
     phi = np.exp(D) * np.exp(C)
     return phi
 
