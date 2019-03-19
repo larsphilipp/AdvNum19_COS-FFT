@@ -43,17 +43,17 @@ k       = np.arange(np.power(2,N))
 u       = k*np.pi/bma
 
 
-# In[4]: Black Scholes Option Pricing
+# In[3]: Black Scholes Option Pricing
 C_BS, p, d1, d2 = func.blackS(S0, K, r, tau, sigma, q)
 print (C_BS)
 
 
-# In[6]: COS-FFT Value Function for Put
+# In[4]: COS-FFT Value Function for Put
 UkPut = 2 / bma * ( func.cosSer1(a,b,a,0,k) - func.cosSerExp(a,b,a,0,k) )
 UkCall = 2 / bma * ( func.cosSerExp(a,b,0,b,k) - func.cosSer1(a,b,0,b,k) )
 
 
-# In[7]: COS with BS-Characterstic Function
+# In[5]: COS with BS-Characterstic Function
 charactersticFunctionBS = func.charFuncBSM(u, mu, sigma, tau)
 
 C_COS = np.zeros((np.size(K)))
@@ -68,7 +68,7 @@ for m in range(0,np.size(K)):
 print (C_COS)
 
 
-# In[8]: COS with Fang Oosterle Version of Heston's Characteristic Function
+# In[6]: COS with Fang Oosterle Version of Heston's Characteristic Function
 charactersticFunctionFOH = func.charFuncHestonFOH(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
 
 C_COS_HFO = np.zeros((np.size(K)))
