@@ -122,7 +122,7 @@ lm = 1.5768
 mu = riskfree #.12**2
 eta = .5751
 rho = -0.5711  #-.0
-sigma = 0.15 #.12**2
+sigma = 0.0175 #.12**2
 param = HestonParam(lm=lm, mu=mu, eta=eta, rho=rho, sigma=sigma)
 
 premium = np.zeros((np.size(K)))
