@@ -23,6 +23,7 @@ University of St. Gallen, 24.03.2019
 5. <a href="#E2">Data</a>
 6. <a href="#F2">Results</a>
 7. <a href="#G2">Concluding remarks</a>
+8. <a href="#H2">References</a>
 
 
 ## <div id="A2"> <a href="#0">Introduction  </a> </div>
@@ -43,7 +44,7 @@ from scipy.special import erf
 np.seterr(divide='ignore', invalid='ignore')
 import AllFunctions as func # Only used in the OptionPricing.py file
 ```
-</details> </p> <br>
+</details> </p>
 
 The decision on the parameters is crucial, at least for some. We will elaborate in a later paragraph, how we derived certain parameters. Here we simply state the most important parameters we used.
 
@@ -78,7 +79,7 @@ k       = np.arange(np.power(2,N))
 # Input for the Characterstic Function Phi
 u       = k*np.pi/bma
 ```
-</details> </p> <br>
+</details> </p>
 
 We downloaded the stock price data from... Strike price range of ... Vola?, mu?, r?, q?
 
@@ -114,16 +115,42 @@ def blackS(S, X, r, T, sigma, q):
     
     return c,p,d1,d2
 ```
-</details> </p> <br>
+</details> </p>
 
 ## <div id="C2"> <a href="#0">Cosine transform method  </a> </div>
 
 Fang & Oosterlee (2008) presented a new way to price (complex) options using a Fourier-based methods for numerical integration. Until the publication of their results, the Fast Fourier Transform method was known for its computational efficiency in option pricing. The authors introduce the COS method, which will further increase the speed of the calculations. Compared to other methods, which also show high computational speed, the COS method can compute option prices for a vector of strikes and provides an efficient way to recover the density from the characteristic function.
 
 ### Truncation range ###
+During our project we became aware of the truncation range. As Call options' payoffs rise with increasing stock price a cancellation error can be introduced when valuing call options. This effect does not occur for Put options. This is why we will use Put options to calculate the truncation range and then use the Put-Call-Parity to transfer the findings to the Call options (Fang, 2010, p. 28). <br> <br>
+
+Put-Call-Parity: <br>
+![equation](http://latex.codecogs.com/gif.latex?v^{call}(\textup{x},&space;t_0)&space;=&space;v^{put}(\textup{x},&space;t_0)&plus;S_0e^{-qT}-Ke^{-rT}) <br> <br>
+
+For the exact derivation of our Python code, please see Alistair et al. (2008, p. 836).
+
+<details> <summary>Click to see the code</summary> <p>
+    
+```python
+def truncationRange(L, mu, tau, sigma, v_bar, lm, rho, volvol):
+        c1 = mu * tau + (1 - np.exp(-lm * tau)) * (v_bar - sigma)/(2 * lm) - v_bar * tau / 2
+
+        c2 = 1/(8 * np.power(lm,3)) * (volvol * tau * lm * np.exp(-lm * tau) \
+            * (sigma - v_bar) * (8 * lm * rho - 4 * volvol) \
+            + lm * rho * volvol * (1 - np.exp(-lm * tau)) * (16 * v_bar - 8 * sigma) \
+            + 2 * v_bar * lm * tau * (-4 * lm * rho * volvol + np.power(volvol,2) + 4 * np.power(lm,2)) \
+            + np.power(volvol,2) * ((v_bar - 2 * sigma) * np.exp(-2 * lm * tau) \
+            + v_bar * (6 * np.exp(-lm * tau) - 7) + 2 * sigma) \
+            + 8 * np.power(lm,2) * (sigma - v_bar) * (1 - np.exp(-lm * tau)))
+
+        a = c1 - L * np.sqrt(np.abs(c2))
+        b = c1 + L * np.sqrt(np.abs(c2))
+        return a, b    
+```
+</details> </p>
 
 ### Cosine series expansion ###
-Based on the equations (22) and (23) in Fang & Oosterlee, we implemented functions for the Cosine expansion.
+Based on the equations (22) and (23) in Fang & Oosterlee (2008), we implemented functions for the Cosine expansion.
 
 <details> <summary>Click to see the code</summary> <p>
     
@@ -143,7 +170,7 @@ def cosSer1(a,b,c,d,k):
     psi[0] = d-c
     return psi
 ```
-</details> </p> <br>
+</details> </p>
 
 These Cosine expansions are now used to calculate the payoff series coefficients of the option.
 ![equation](http://latex.codecogs.com/gif.latex?U_k^{call}&space;=&space;\frac{2}{b-a}(\chi&space;_k(0,b)-\psi&space;_k(0,b))) <br>
@@ -158,7 +185,7 @@ UkPut = 2 / bma * ( func.cosSer1(a,b,a,0,k) - func.cosSerExp(a,b,a,0,k) )
 UkCall = 2 / bma * ( func.cosSerExp(a,b,0,b,k) - func.cosSer1(a,b,0,b,k) )
 ```
 
-</details> </p> <br>
+</details> </p>
 
 ## <div id="D2"> <a href="#0">Characteristic functions  </a> </div>
 
@@ -180,7 +207,7 @@ for m in range(0,np.size(K)):
 print (C_COS)
 ```
 
-</details> </p> <br>
+</details> </p>
 
 ### Heston characteristic function ###
 From Fang (2010) Eq. (2.32) we implemented the characteristic function for the Heston model. 
@@ -197,8 +224,7 @@ def charFuncHestonFOH(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
     phi = np.exp(D) * np.exp(C)
     return phi    
 ```
-</details> </p> <br>
-
+</details> </p>
 
 To use the Heston model for option pricing, we combine the above results and validate our Call option price via the Put-Call-Parity. 
 
@@ -219,12 +245,28 @@ for m in range(0, np.size(K)):
     C_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkCall)) * np.exp(-r * tau)
     P_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkPut)) * np.exp(-r * tau)
     C_COS_PCP[m] = P_COS_HFO[m] + S0 * np.exp(-q * tau) - K[m] * np.exp(-r * tau)    
+    
+print(C_COS_HFO)
+print(P_COS_HFO)
+print(C_COS_PCP)
 ```
-</details> </p> <br>
+</details> </p>
 
 ## <div id="E2"> <a href="#0">Data  </a> </div>
+- Which data to use? 
+- Which parameters to use for the data?
+
 ## <div id="F2"> <a href="#0">Results  </a> </div>
+- Computing time
+- Efficiency?
+- Plot?
+
 ## <div id="G2"> <a href="#0">Concluding remarks  </a> </div>
+As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices. We observed this phenomenon ourselves when comparing the results from our COS-Heston calculations to the Black-Scholes option prices.
+
+## <div id="H2"> <a href="#0">References  </a> </div>
+
+Fang, F. (2010).*The COS Method: An Efficient Fourier Method for Pricing Financial Derivatives*. Doctor thesis. 
 
 
 ### Sample equation ###
@@ -237,4 +279,4 @@ for m in range(0, np.size(K)):
     
 ```
 
-</details> </p> <br>
+</details> </p>
