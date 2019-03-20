@@ -7,18 +7,19 @@
 ## Improvements: -
 ## Last changes: -
 
-# In[1]: Packages, Settings
 
+# In[1]: Packages, Settings
 import numpy as np
 import AllFunctions as func
-np.seterr(divide='ignore', invalid='ignore')
+import matplotlib.pyplot as plt
+np.seterr(divide = 'ignore', invalid = 'ignore')
 
 
 # In[2]: Parameter
-# According to Fang 2010, p. 30
+# According to Fang, 2010, p. 30
 r       = 0         # Risk-free rate
 mu      = r         # Mean rate of drift
-sigma   = 0.0175    # Initial Vola of underyling at time 0; also called u0 or a
+sigma   = 0.3       # Initial Vola of underyling at time 0; also called u0 or a
 S0      = 100       # Today's stock price
 tau     = 30 / 365  # Time to expiry in years
 q       = 0         # Divindend Yield
@@ -40,7 +41,7 @@ N       = 15
 k       = np.arange(np.power(2,N))
 
 # Input for the Characterstic Function Phi
-u       = k*np.pi/bma
+u       = k * np.pi/bma
 
 
 # In[3]: Black Scholes Option Pricing
@@ -60,15 +61,15 @@ C_COS = np.zeros((np.size(K)))
 
 for m in range(0,np.size(K)):
     x  = np.log(S0/K[m])
-    addIntegratedTerm = np.exp(1j*k*np.pi*(x-a)/bma)
+    addIntegratedTerm = np.exp(1j * k * np.pi * (x-a)/bma)
     Fk = np.real(np.multiply(charactersticFunctionBS, addIntegratedTerm))
-    Fk[0]=0.5*Fk[0] 
-    C_COS[m] = K[m] * np.sum(np.multiply(Fk,UkCall)) * np.exp(-r*tau)
+    Fk[0]=0.5 * Fk[0] 
+    C_COS[m] = K[m] * np.sum(np.multiply(Fk,UkCall)) * np.exp(-r * tau)
     
 print (C_COS)
 
 
-# In[6]: COS with Fang Oosterle Version of Heston's Characteristic Function
+# In[6]: COS with Fang & Oosterlee (2008) Version of Heston's Characteristic Function
 charactersticFunctionFOH = func.charFuncHestonFOH(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
 
 C_COS_HFO = np.zeros((np.size(K)))
@@ -77,15 +78,22 @@ C_COS_PCP = np.zeros((np.size(K)))
 
 for m in range(0, np.size(K)):
     x  = np.log(S0/K[m])
-    addIntegratedTerm = np.exp(1j*k*np.pi*(x-a)/bma)
+    addIntegratedTerm = np.exp(1j * k * np.pi * (x-a)/bma)
     Fk = np.real(charactersticFunctionFOH * addIntegratedTerm)
     Fk[0] = 0.5 * Fk[0]						
     C_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkCall)) * np.exp(-r * tau)
     P_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkPut)) * np.exp(-r * tau)
-    C_COS_PCP[m] = P_COS_HFO[m] + S0 * np.exp(-q*tau) - K[m] * np.exp(-r * tau)
+    C_COS_PCP[m] = P_COS_HFO[m] + S0 * np.exp(-q * tau) - K[m] * np.exp(-r * tau)
 
 print(C_COS_HFO)
 print(P_COS_HFO)
 print(C_COS_PCP)
+
+
+# In[7]: Plotting
+plt.plot(K, C_BS, "g.", K, C_COS, "b.", K, C_COS_HFO, "r.")
+plt.axvline(x = S0)
+plt.show()
+
 
 ## End
