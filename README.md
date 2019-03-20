@@ -127,7 +127,7 @@ During our project we became aware of the truncation range. As Call options' pay
 Put-Call-Parity: <br>
 ![equation](http://latex.codecogs.com/gif.latex?v^{call}(\textup{x},&space;t_0)&space;=&space;v^{put}(\textup{x},&space;t_0)&plus;S_0e^{-qT}-Ke^{-rT}) <br> <br>
 
-For the exact derivation of our Python code, please see Alistair et al. (2008, p. 836).
+For the exact derivation of our Python code, please see Fitt et al. (2010, p. 836).
 
 <details> <summary>Click to see the code</summary> <p>
     
@@ -266,8 +266,10 @@ As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-m
 
 ## <div id="H2"> <a href="#0">References  </a> </div>
 
-Fang, F. (2010).*The COS Method: An Efficient Fourier Method for Pricing Financial Derivatives*. Doctor thesis. 
-
+Fang, F. (2010). *The COS Method: An Efficient Fourier Method for Pricing Financial Derivatives*. Doctor thesis. <br>
+Fang, F. & Oosterlee, K. (2008). *A Novel Pricing Method for European Options Based on Fourier-Cosine Series Expansions*. <br>
+Fitt, A., Norbury, J., Ockendon, H. & Wilson, E. (2010). *Progress in Industrial Mathematics at ECMI 2008*. Springer Berlin. <br>
+Heston, S. (1993). *A Closed-Form Solution for Options with Stochastic Volatility with Applications to Bond and Currency Options*. <br>
 
 ### Sample equation ###
 ![equation](http://latex.codecogs.com/gif.latex?C(S,&space;t)&space;=&space;S\Phi&space;d_1&space;-&space;Ke^{-r(t-t)}\Phi&space;d_2) <br>
