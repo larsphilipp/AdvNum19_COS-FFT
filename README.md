@@ -31,7 +31,7 @@ University of St. Gallen, 24.03.2019
 This is the documentation for the "COS-FFT" assignment of the class **Advanced Numerical Methods and Data Analysis** taught by Prof. Peter Gruber at the University of St. Gallen in Spring 2019. We - Elisa Fleissner and Lars Stauffenegger - are in the 2nd Semester of our Master studies and worked as a group with the aim to use the Cosine transform method as presented in [Fang & Oosterlee (2008)](http://mpra.ub.uni-muenchen.de/9319/) combined with the [Heston model](tbd) to value plain-vanilla European Call options. To validate our results, we implemented the Black Scholes model in our calculations. For all calculations we used Python3 language.
 
 ### Project plan ###
-...
+The minimum requieremnts of the project consisted of the picing of plain vanilla options for one underyling and a range of strikes using the Heston model in the COS method. We focused on the technical implementation of the heston characteristic function as this required already a deep understanding of the underlying reading. Fang and Oosterle use a different notation and slightly rearranged formulas of the Heston model compared to the original paper by Heston in 1993.This required both of us to first read both papers as well as further literature such as an a Paper by Wang, 2017 to better understand error sources such as the truncation error. In this type of a exercise coding work cannot really be split, we hence worked alternatly on the code.
 
 ### Parameters and set-up ###
 We first need to download all necessary modules in Python. We split the file into one containing the formulas (`AllFunctions.py`) and one for the calculations (`OptionPricing.py`).
