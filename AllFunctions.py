@@ -2,7 +2,7 @@
 ## Author:       Elisa FLeissner, Lars Stauffenegger
 ## Email:        elisa.fleissner@student.unisg.ch,
 ##               lars.stauffenegger@student.unisg.ch,
-## Place, Time:  Zürich, 19.03.19
+## Place, Time:  Zürich, 24.03.19
 ## Description:  All Functions for Option Pricing with Black Scholes, COS Method and Heston Model
 ## Improvements: -
 ## Last changes: -
@@ -15,18 +15,18 @@ np.seterr(divide='ignore', invalid='ignore')
 
 
 # In[2]: Standard Normal Cumulative Distribution Function
-def stdnCdf(a):
-    cdf = 0.5 + 0.5 * erf(a / np.sqrt(2))
-    return cdf
+def StdNormCdf(z):
+    phi = 0.5 * (1 + erf(z/np.sqrt(2)))
+    return phi
 
 
 # In[3]: Black Scholes Model
-def blackS(S, X, r, T, sigma, q):
-    # Based on code by Peter.Gruber@unisg.ch, February 2007 and Paul.Soderlind@unisg.ch
+def blackScholes(S, X, r, T, sigma, q):
+    # copied from code by Peter.Gruber@unisg.ch, February 2007
     S = S * np.exp(-q * T)
     d1 = np.divide( ( np.log(np.divide(S, X) ) + (r + 1/2 * np.power(sigma, 2)) * T ), ( sigma * np.sqrt(T)) )
     d2 = d1 - sigma * np.sqrt(T)
-    c  = np.multiply(S, stdnCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r * T)), stdnCdf(d2))
+    c  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r * T)), StdNormCdf(d2))
     p  = c + np.multiply(X, np.exp(-r * T)) - S
     return c,p,d1,d2
 
@@ -67,15 +67,12 @@ def cosSer1(a, b, c, d, k):
 
 # In[6]: Characteristic Functions
 def charFuncBSM(s, mu, sigma, T):
-    # phi = E[exp(ius)]
-    # In the BS-Case, this is
     phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))  #vector-compatible in s
     return phi
 
-def charFuncHestonFOH(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
+def charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
     d = np.sqrt(np.power(lm - 1j * rho * volvol * u, 2) + np.power(volvol,2) * (np.power(u,2) + u * 1j))
     g = (lm - 1j * rho * volvol * u - d) / (lm - 1j * rho * volvol * u + d)
-    #C = np.divide(lm * mu, np.power(volvol,2)) * ( (lm - 1j * rho * volvol * u - d) * tau - 2 * np.log(np.divide((1 - g * np.exp(-d * tau)) , (1-g)) ))
     C = np.divide(lm * v_bar, np.power(volvol,2)) * ( (lm - 1j * rho * volvol * u - d) * tau - 2 * np.log(np.divide((1 - g * np.exp(-d * tau)) , (1-g)) ))
     D = 1j * r * u * tau + sigma / np.power(volvol,2) * (np.divide((1 - np.exp(-d * tau)), (1 - g * np.exp(-d * tau)))) * (lm - 1j * rho * volvol * u - d) 
     phi = np.exp(D) * np.exp(C)

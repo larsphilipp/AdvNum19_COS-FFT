@@ -2,7 +2,7 @@
 ## Author:       Elisa FLeissner, Lars Stauffenegger
 ## Email:        elisa.fleissner@student.unisg.ch,
 ##               lars.stauffenegger@student.unisg.ch,
-## Place, Time:  Zürich, 19.03.19
+## Place, Time:  Zürich, 24.03.19
 ## Description:  Option Pricing with Black Scholes, COS Method and Heston Model
 ## Improvements: -
 ## Last changes: -
@@ -13,6 +13,9 @@ import numpy as np
 import AllFunctions as func
 import matplotlib.pyplot as plt
 np.seterr(divide = 'ignore', invalid = 'ignore')
+
+import  quandl
+## TODO: quandl price import, Hardcoded for 1 security
 
 
 # In[2]: Parameter
@@ -45,7 +48,7 @@ u       = k * np.pi/bma
 
 
 # In[3]: Black Scholes Option Pricing
-C_BS, p, d1, d2 = func.blackS(S0, K, r, tau, sigma, q)
+C_BS, p, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
 print (C_BS)
 
 
@@ -70,7 +73,7 @@ print (C_COS)
 
 
 # In[6]: COS with Fang & Oosterlee (2008) Version of Heston's Characteristic Function
-charactersticFunctionFOH = func.charFuncHestonFOH(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
+charactersticFunctionFOH = func.charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
 
 C_COS_HFO = np.zeros((np.size(K)))
 P_COS_HFO = np.zeros((np.size(K)))
