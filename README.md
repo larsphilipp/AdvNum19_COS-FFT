@@ -96,24 +96,20 @@ Before implementing the Black-Scholes formula in Python, we need to define a fun
 <details> <summary>Click to see the code</summary> <p>
     
 ```python
-def stdnCdf(a):
-    cdf = 0.5 + 0.5 * erf(a / np.sqrt(2))
-    return cdf
+# Cumulative Distribution Function
+def StdNormCdf(z):
+    phi = 0.5 * (1 + erf(z/np.sqrt(2)))
+    return phi
 
-# In[3]: Black Scholes Model
-def blackS(S, X, r, T, sigma, q):
-    #Calculates Black-Scholes european option prices.
-    #  Peter.Gruber@unisg.ch, February 2007
-    #  Based on code by Paul.Soderlind@unisg.ch
-    #if arg == 6:     # if dividend is specified, correct for it
+# Black Scholes Model
+def blackScholes(S, X, r, T, sigma, q):
+    # copied from code by Peter.Gruber@unisg.ch, February 2007
     S = S * np.exp(-q * T)
-    
     d1 = np.divide( ( np.log(np.divide(S, X) ) + (r + 1/2 * np.power(sigma, 2)) * T ), ( sigma * np.sqrt(T)) )
     d2 = d1 - sigma * np.sqrt(T)
-    c  = np.multiply(S, stdnCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r*T)), stdnCdf(d2))
-    p  = c + np.multiply(X, np.exp(-r*T)) - S                  #put-call parity
-    
-    return c,p,d1,d2
+    c  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r * T)), StdNormCdf(d2))
+    p  = c + np.multiply(X, np.exp(-r * T)) - S
+return c,p,d1,d2
 ```
 </details> </p>
 
