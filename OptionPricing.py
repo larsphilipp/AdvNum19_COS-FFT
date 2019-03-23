@@ -9,30 +9,47 @@
 
 
 # In[1]: Packages, Settings
+import quandl
 import numpy as np
+import pandas as pd
 import AllFunctions as func
 import matplotlib.pyplot as plt
-np.seterr(divide = 'ignore', invalid = 'ignore')
 
-import  quandl
 ## TODO: quandl price import, Hardcoded for 1 security
+
+
+# In[2]: Import data from quandl
+quandl.ApiConfig.api_key = "mrMTRoAdPycJSyzyjxPN"
+ticker = "AAPL"
+database = "EOD"
+ID = database + "/" + ticker
+stock_data = quandl.get(ID, rows = 500)
+log_ret = np.log(stock_data.Close) - np.log(stock_data.Close.shift(1))
+log_ret.drop(log_ret.index[:1], inplace = True)
+
+mean_data = np.mean(log_ret)
+var_data = np.var(log_ret)
+sd_data = np.sqrt(var_data)
+stock_today = stock_data.Close.tail(1)
 
 
 # In[2]: Parameter
 # According to Fang, 2010, p. 30
 r       = 0         # Risk-free rate
-mu      = r         # Mean rate of drift
-sigma   = 0.3       # Initial Vola of underyling at time 0; also called u0 or a
-S0      = 100       # Today's stock price
+mu      = mean_data         # Mean rate of drift
+sigma   = sd_data       # Initial Vola of underyling at time 0; also called u0 or a
+S0      = int(stock_today)       # Today's stock price
 tau     = 30 / 365  # Time to expiry in years
 q       = 0         # Divindend Yield
 lm      = 1.5768    # The speed of mean reversion
-v_bar   = 0.0398    # Mean level of variance of the underlying
+v_bar   = var_data    # Mean level of variance of the underlying
 volvol  = 0.5751    # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
 rho     = -0.5711   # Covariance between the log stock and the variance process
 
 # Range of Strikes
-K       = np.arange(70, 131, dtype = np.float)
+mini    = int(stock_today * 0.8)
+maxi    = int(stock_today * 1.2)
+K       = np.arange(mini, maxi, dtype = np.float)
 
 # Truncation Range
 L       = 120
@@ -97,6 +114,6 @@ print(C_COS_PCP)
 plt.plot(K, C_BS, "g.", K, C_COS, "b.", K, C_COS_HFO, "r.")
 plt.axvline(x = S0)
 plt.show()
-
+print("C_BS = green, C_COS = blue, C_COS_HFO = red")
 
 ## End

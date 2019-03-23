@@ -9,6 +9,7 @@
 
 
 # In[1]: Packages, Settings
+import quandl
 import numpy as np
 from scipy.special import erf
 np.seterr(divide='ignore', invalid='ignore')
