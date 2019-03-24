@@ -65,7 +65,7 @@ u       = k * np.pi/bma
 
 
 # In[3]: Black Scholes Option Pricing
-C_BS, P_BS, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
+C_BS, P_BS = func.blackScholes(S0, K, r, tau, sigma, q)
 print(C_BS)
 
 

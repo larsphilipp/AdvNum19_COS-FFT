@@ -26,7 +26,7 @@ def blackScholes(S, K, r, tau, sigma, q):
     d2 = d1 - sigma * np.sqrt(tau)
     call  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(K, np.exp(-r * tau)), StdNormCdf(d2))
     put  = call + np.multiply(K, np.exp(-r * tau)) - S
-    return call,put,d1,d2
+    return call, put
 
 
 # In[4]: Truncation Range based on Fitt et al. (2010)
