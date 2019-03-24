@@ -140,7 +140,7 @@ def truncationRange(L, mu, tau, sigma, v_bar, lm, rho, volvol):
 ## <div id="B2"> <a href="#0">Black Scholes Formula  </a> </div>
 
 As a starting point for valuing European Call options, we decided to apply the Black Scholes option pricing formula to the data at hand. <br>
-Black-Scholes pricing formula for a call: <br>
+Black-Scholes pricing formula for a call: <br><br>
 ![equation](http://latex.codecogs.com/gif.latex?C(S,&space;t)&space;=&space;S\Phi&space;d_1&space;-&space;Ke^{-r(t-t)}\Phi&space;d_2) <br>
 ![equation](http://latex.codecogs.com/gif.latex?d_1&space;=&space;\frac{ln(S/K)&space;&plus;&space;(r&space;&plus;&space;\sigma^2/2)*(T-t)}{\sigma&space;*\sqrt(T-t)}) <br>
 ![equation](http://latex.codecogs.com/gif.latex?d_2&space;=&space;d_1&space;-&space;\sigma&space;\sqrt(T-t)) <br>
@@ -162,9 +162,9 @@ def blackScholes(S, K, r, tau, sigma, q):
     d2 = d1 - sigma * np.sqrt(tau)
     call  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(K, np.exp(-r * tau)), StdNormCdf(d2))
     put  = call + np.multiply(K, np.exp(-r * tau)) - S
-    return call,put,d1,d2
+    return call, put
     
-C_BS, P_BS, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
+C_BS, P_BS = func.blackScholes(S0, K, r, tau, sigma, q)
 print(C_BS)
 ```
 </details> </p>
@@ -196,7 +196,7 @@ def cosSer1(a, b, c, d, k):
 ```
 </details> </p>
 
-These Cosine expansions are now used to calculate the payoff series coefficients of the option.
+These Cosine expansions are now used to calculate the payoff series coefficients of the option.<br>
 ![equation](http://latex.codecogs.com/gif.latex?U_k^{call}&space;=&space;\frac{2}{b-a}(\chi&space;_k(0,b)-\psi&space;_k(0,b))) <br>
 ![equation](http://latex.codecogs.com/gif.latex?U_k^{put}&space;=&space;\frac{2}{b-a}(-\chi&space;_k(a,0)+\psi&space;_k(a,0))) <br>
 Note: <br>
