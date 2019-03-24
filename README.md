@@ -198,7 +198,7 @@ def cosSer1(a, b, c, d, k):
 
 These Cosine expansions are now used to calculate the payoff series coefficients of the option.
 ![equation](http://latex.codecogs.com/gif.latex?U_k^{call}&space;=&space;\frac{2}{b-a}(\chi&space;_k(0,b)-\psi&space;_k(0,b))) <br>
-![equation](http://latex.codecogs.com/gif.latex?U_k^{call}&space;=&space;\frac{2}{b-a}(-\chi&space;_k(0,b)+\psi&space;_k(0,b))) <br>
+![equation](http://latex.codecogs.com/gif.latex?U_k^{put}&space;=&space;\frac{2}{b-a}(-\chi&space;_k(a,0)+\psi&space;_k(a,0))) <br>
 Note: <br>
 ![equation](http://latex.codecogs.com/gif.latex?V_k&space;=&space;U_k&space;K)
 
