@@ -43,7 +43,7 @@ tau    = 30 / 365           # Time to expiry in years
 q      = 0                  # Divindend Yield
 lm     = 1.5768             # The speed of mean reversion
 v_bar  = annualisedVariance # Mean level of variance of the underlying
-volvol =  0.5751            # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+volvol =  0.5751            # Volatility of the volatiltiy process
 rho    = -0.5711            # Covariance between the log stock and the variance process
 
 # Range of Strikes
