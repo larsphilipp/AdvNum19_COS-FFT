@@ -15,8 +15,6 @@ import pandas as pd
 import AllFunctions as func
 import matplotlib.pyplot as plt
 
-## TODO: quandl price import, Hardcoded for 1 security
-
 
 # In[2]: Import data from quandl
 quandl.ApiConfig.api_key = "mrMTRoAdPycJSyzyjxPN"
@@ -34,17 +32,17 @@ stock_today = stock_data.Close.tail(1)
 
 
 # In[2]: Parameter
-# According to Fang, 2010, p. 30
-r       = 0         # Risk-free rate
-mu      = mean_data         # Mean rate of drift
-sigma   = sd_data       # Initial Vola of underyling at time 0; also called u0 or a
-S0      = int(stock_today)       # Today's stock price
-tau     = 30 / 365  # Time to expiry in years
-q       = 0         # Divindend Yield
-lm      = 1.5768    # The speed of mean reversion
-v_bar   = var_data    # Mean level of variance of the underlying
-volvol  = 0.5751    # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
-rho     = -0.5711   # Covariance between the log stock and the variance process
+# Volvol and rho according to Fang, 2010, p. 30
+r       = 0          # Risk-free rate
+mu      = mean_data  # Mean rate of drift
+sigma   = sd_data    # Initial Vola of underyling at time 0; also called u0 or a
+S0      = int(stock_today)  # Today's stock price
+tau     = 30 / 365   # Time to expiry in years
+q       = 0          # Divindend Yield
+lm      = 1.5768     # The speed of mean reversion
+v_bar   = var_data   # Mean level of variance of the underlying
+volvol  = 0.5751     # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+rho     = -0.5711    # Covariance between the log stock and the variance process
 
 # Range of Strikes
 mini    = int(stock_today * 0.8)

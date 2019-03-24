@@ -12,7 +12,6 @@
 import quandl
 import numpy as np
 from scipy.special import erf
-np.seterr(divide='ignore', invalid='ignore')
 
 
 # In[2]: Standard Normal Cumulative Distribution Function
@@ -68,7 +67,7 @@ def cosSer1(a, b, c, d, k):
 
 # In[6]: Characteristic Functions
 def charFuncBSM(s, mu, sigma, T):
-    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))  #vector-compatible in s
+    phi = np.exp((mu - 0.5 * np.power(sigma,2)) * 1j * np.multiply(T,s) - 0.5 * np.power(sigma,2) * T * np.power(s,2))
     return phi
 
 def charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
