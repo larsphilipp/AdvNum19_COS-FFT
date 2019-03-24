@@ -256,7 +256,7 @@ def charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
 </details> </p>
 
 To use the Heston model for call option pricing we determined the Put option prices first and calculated the corresponding Call option prices using the Put-Call-Parity. As Call options' payoffs rise with increasing stock price a cancellation error can be introduced when valuing call options. This effect does not occur for Put options. (Fang, 2010, p. 28).  <br>
-Put-Call-Parity: <br>
+Put-Call-Parity: <br><br>
 ![equation](http://latex.codecogs.com/gif.latex?v^{call}(\textup{x},&space;t_0)&space;=&space;v^{put}(\textup{x},&space;t_0)&plus;S_0e^{-qT}-Ke^{-rT}) <br> <br>
 
 <details> <summary>Click to see the code</summary> <p>
