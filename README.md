@@ -89,7 +89,7 @@ tau    = 30 / 365           # Time to expiry in years
 q      = 0                  # Divindend Yield
 lm     = 1.5768             # The speed of mean reversion
 v_bar  = annualisedVariance # Mean level of variance of the underlying
-volvol =  0.5751            # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+volvol =  0.5751            # Volatility of the volatiltiy process
 rho    = -0.5711            # Covariance between the log stock and the variance process
 
 # Range of Strikes
@@ -287,7 +287,7 @@ print(C_COS_PCP)
 ## <div id="F2"> <a href="#0">Results  </a> </div>
 
 ### Plot ###
-To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis).
+To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis). The standard and the COS-Black-Scholes prices are identical. One can see that especially at-the-money call option prices under Heston exceed the ones using the Black Scholes characterstic function. A comparison is difficult as some of the Heston input parameters were simply taken from the Fang paper and might not represent accurate estimates for our underlying. It seems that the shift from constant volatility (Black Scholes) to stochastic volatility (Heston) causes the vega-sensitive options to increase in price.
 
 <details> <summary>Click to see the code</summary> <p>
 
