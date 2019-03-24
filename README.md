@@ -31,7 +31,7 @@ University of St. Gallen, 24.03.2019
 This is the documentation for the "COS-FFT" assignment of the class **Advanced Numerical Methods and Data Analysis** taught by Prof. Peter Gruber at the University of St. Gallen in Spring 2019. We - Elisa Fleissner and Lars Stauffenegger - are in the 2nd Semester of our Master studies and worked as a group with the aim to use the Cosine transform method as presented in [Fang & Oosterlee (2008)](http://mpra.ub.uni-muenchen.de/9319/) combined with the Heston model to value plain-vanilla European Call options. To validate our results, we implemented the Black Scholes model in our calculations. For all calculations we used Python3 language.
 
 ### Project plan ###
-The minimum requierements of the project consisted of the picing of plain vanilla options for one underyling and a range of strikes using the Heston model in the COS method. We focused on the technical implementation of the heston characteristic function as this required already a deep understanding of the underlying reading. Fang and Oosterle (2008) use a different notation and slightly rearranged formulas of the Heston model compared to the original paper by Heston in 1993. This required both of us to first read both papers as well as further literature such as a paper by Wang (2017) to better understand error sources (e.g. truncation error). In this type of an exercise coding work cannot really be split, we hence worked alternatly on the code using Github for version control and documentation. Our target was to have a working model with automated stock data inputs calculating call as well as put option prices using different approaches: the Black Scholes Model, the COS Method with the Characterstic function used in Black Scholes and the COS Method applying Heston's characteristic function.
+The minimum requierements of the project consisted of the picing of plain vanilla options for one underlying and a range of strikes using the Heston model in the COS method. We focused on the technical implementation of the Heston characteristic function as this required already a deep understanding of the underlying reading. Fang and Oosterle (2008) use a different notation and slightly rearranged formulas of the Heston model compared to the original paper by Heston in 1993. This required both of us to first read both papers as well as further literature such as a paper by Wang (2017) to better understand error sources (e.g. truncation error). In this type of an exercise, coding work cannot really be split, we hence worked alternately on the code using Github for version control and documentation. Our target was to have a working model with automated stock data inputs calculating Call as well as Put option prices using different approaches: the Black Scholes Model, the COS Method with the Characterstic function used in Black Scholes and the COS Method applying Heston's characteristic function.
 
 ### Setup ###
 We first needed to download all necessary modules in Python. We split the file into one containing the formulas (`AllFunctions.py`) and one for the calculations (`OptionPricing.py`).
@@ -112,10 +112,7 @@ u       = k * np.pi/bma
 </details> </p>
 
 ### Truncation range ###
-The choice of the truncation range can be essential for the pricing of the options. We figured out that our initial range determination (simply a multiple of the time-to-maturity adjusted standard deviation) delivered an unsatifying ouput for example for low volality. Hence we decided to check for another approach and implemented an more sopisticated determination of the truncation range as presented in Fitt et al. (2010). <br> <br>
-
-Put-Call-Parity: <br>
-![equation](http://latex.codecogs.com/gif.latex?v^{call}(\textup{x},&space;t_0)&space;=&space;v^{put}(\textup{x},&space;t_0)&plus;S_0e^{-qT}-Ke^{-rT}) <br> <br>
+The choice of the truncation range can be essential for the pricing of the options. We figured out that our initial range determination (simply a multiple of the time-to-maturity adjusted standard deviation) delivered an unsatifying ouput for example for low volality. Hence we decided to check for another approach and implemented a more sopisticated determination of the truncation range as presented in Fitt et al. (2010). <br> <br>
 
 For the exact derivation of our Python code, please see Fitt et al. (2010, p. 836).
 
@@ -217,6 +214,7 @@ UkCall = 2 / bma * ( func.cosSerExp(a,b,0,b,k) - func.cosSer1(a,b,0,b,k) )
 ## <div id="D2"> <a href="#0">Characteristic functions  </a> </div>
 
 ### Black-Scholes characteristic function ###
+To calculate the prices with the COS method (without Heston) we first applied the characteristic function from the Black Scholes model. 
 
 <details> <summary>Click to see the code</summary> <p>
     
@@ -257,7 +255,9 @@ def charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol):
 ```
 </details> </p>
 
-To use the Heston model for call option pricing we determined the Put option prices first and calculated the corresponding Call option prices using the Put-Call-Parity . As Call options' payoffs rise with increasing stock price a cancellation error can be introduced when valuing call options. This effect does not occur for Put options.  (Fang, 2010, p. 28). 
+To use the Heston model for call option pricing we determined the Put option prices first and calculated the corresponding Call option prices using the Put-Call-Parity. As Call options' payoffs rise with increasing stock price a cancellation error can be introduced when valuing call options. This effect does not occur for Put options. (Fang, 2010, p. 28).  <br>
+Put-Call-Parity: <br>
+![equation](http://latex.codecogs.com/gif.latex?v^{call}(\textup{x},&space;t_0)&space;=&space;v^{put}(\textup{x},&space;t_0)&plus;S_0e^{-qT}-Ke^{-rT}) <br> <br>
 
 <details> <summary>Click to see the code</summary> <p>
     
@@ -287,7 +287,7 @@ print(C_COS_PCP)
 ## <div id="F2"> <a href="#0">Results  </a> </div>
 
 ### Plot ###
-To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis). The standard and the COS-Black-Scholes prices are identical. One can see that especially at-the-money call option prices under Heston exceed the ones using the Black Scholes characterstic function. A comparison is difficult as some of the Heston input parameters were simply taken from the Fang paper and might not represent accurate estimates for our underlying. It seems that the shift from constant volatility (Black Scholes) to stochastic volatility (Heston) causes the vega-sensitive options to increase in price.
+To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis). The standard and the COS-Black-Scholes prices are identical. One can see that especially at-the-money call option prices under Heston exceed the ones using the Black Scholes characterstic function. A comparison is difficult as some of the Heston input parameters were simply taken from the Fang & Oosterle (2008) paper and might not represent accurate estimates for our underlying. It seems that the shift from constant volatility (Black Scholes) to stochastic volatility (Heston) causes the vega-sensitive options to increase in price.
 
 <details> <summary>Click to see the code</summary> <p>
 
@@ -307,7 +307,7 @@ print("C_BS = green, C_COS = blue, C_COS_HFO = red")
 
 ## <div id="G2"> <a href="#0">Concluding remarks  </a> </div>
 This project was rather technical and it took a lot of effort to get all formulas correct. However, once running, the COS-FFT method combined with the Heston model provides a powerful tool to price many options with very high efficiency. In a next step, it would also be interesting to value other options such as digital or barrier options. <br>
-There is also some criticism on this method. As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices. We observed this phenomenon ourselves when comparing the results from our COS-Heston calculations to the Black-Scholes option prices.
+There is also some criticism on this method. As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices.
 
 ## <div id="H2"> <a href="#0">References  </a> </div>
 
