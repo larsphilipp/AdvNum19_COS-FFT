@@ -9,7 +9,6 @@
 
 
 # In[1]: Packages, Settings
-import quandl
 import numpy as np
 from scipy.special import erf
 
@@ -21,14 +20,13 @@ def StdNormCdf(z):
 
 
 # In[3]: Black Scholes Model
-def blackScholes(S, X, r, T, sigma, q):
-    # copied from code by Peter.Gruber@unisg.ch, February 2007
-    S = S * np.exp(-q * T)
-    d1 = np.divide( ( np.log(np.divide(S, X) ) + (r + 1/2 * np.power(sigma, 2)) * T ), ( sigma * np.sqrt(T)) )
-    d2 = d1 - sigma * np.sqrt(T)
-    c  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(X, np.exp(-r * T)), StdNormCdf(d2))
-    p  = c + np.multiply(X, np.exp(-r * T)) - S
-    return c,p,d1,d2
+def blackScholes(S, K, r, tau, sigma, q):
+    S = S * np.exp(-q * tau)
+    d1 = np.divide((np.log(np.divide(S, K)) + (r + 1/2 * np.power(sigma, 2)) * tau), (sigma * np.sqrt(tau)))
+    d2 = d1 - sigma * np.sqrt(tau)
+    call  = np.multiply(S, StdNormCdf(d1)) - np.multiply(np.multiply(K, np.exp(-r * tau)), StdNormCdf(d2))
+    put  = call + np.multiply(K, np.exp(-r * tau)) - S
+    return call,put,d1,d2
 
 
 # In[4]: Truncation Range based on Fitt et al. (2010)
@@ -48,7 +46,7 @@ def truncationRange(L, mu, tau, sigma, v_bar, lm, rho, volvol):
         return a, b
 
 
-# In[5]: Cosine Expansion based on Fang & Oosterlee (2008)
+# In[5]: Cosine Expansion based on Fang & Oosterlee (2008), translated from Prof. Gruber's Matlab Code
 def cosSerExp(a, b, c, d, k):
     bma = b-a
     uu  = k * np.pi/bma
@@ -59,7 +57,7 @@ def cosSerExp(a, b, c, d, k):
 def cosSer1(a, b, c, d, k):
     bma    = b-a
     uu     = k * np.pi/bma
-    uu[0]  = 1      # to avoid case differentiation (done 2 lines below)
+    uu[0]  = 1
     psi    = np.divide(1,uu) * ( np.sin(uu * (d-a)) - np.sin(uu * (c-a)) )
     psi[0] = d-c
     return psi

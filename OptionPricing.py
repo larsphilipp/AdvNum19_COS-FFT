@@ -8,10 +8,9 @@
 ## Last changes: -
 
 
-# In[1]: Packages, Settings
+# In[1]: Packages
 import quandl
 import numpy as np
-import pandas as pd
 import AllFunctions as func
 import matplotlib.pyplot as plt
 
@@ -19,32 +18,32 @@ import matplotlib.pyplot as plt
 # In[2]: Data
 # Import from quandl
 quandl.ApiConfig.api_key = "mrMTRoAdPycJSyzyjxPN"
-ticker = "AAPL"
-database = "EOD"
+ticker     = "AAPL"
+database   = "EOD"
 identifier = database + "/" + ticker
-stockData = quandl.get(identifier, rows = 500)
+stockData  = quandl.get(identifier, rows = 500)
 
 # Return and Volatility
 logReturn = np.log(stockData.Close) - np.log(stockData.Close.shift(1))
 logReturn.drop(logReturn.index[:1], inplace = True)
-tradingDaysCount= 252
-annualisedMean = np.mean(logReturn) * tradingDaysCount
+tradingDaysCount   = 252
+annualisedMean     = np.mean(logReturn) * tradingDaysCount
 annualisedVariance = np.var(logReturn) * tradingDaysCount
-annualisedStdDev = np.sqrt(annualisedVariance)
-lastPrice = stockData.Close.tail(1)
+annualisedStdDev   = np.sqrt(annualisedVariance)
+lastPrice          = stockData.Close.tail(1)
 
 
 # In[2]: Parameter
 # Volvol and rho according to Fang, 2010, p. 30
 r      = 0                  # assumption Risk-free rate
-mu     = r #annualisedMean     # Mean rate of drift
+mu     = r #annualisedMean  # Mean rate of drift
 sigma  = annualisedStdDev   # Initial Vola of underyling at time 0; also called u0 or a
-S0     = lastPrice [0]         # Today's stock price
+S0     = lastPrice[0]       # Today's stock price
 tau    = 30 / 365           # Time to expiry in years
 q      = 0                  # Divindend Yield
 lm     = 1.5768             # The speed of mean reversion
 v_bar  = annualisedVariance # Mean level of variance of the underlying
-volvol =  0.5751             # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+volvol =  0.5751            # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
 rho    = -0.5711            # Covariance between the log stock and the variance process
 
 # Range of Strikes
@@ -66,7 +65,7 @@ u       = k * np.pi/bma
 
 
 # In[3]: Black Scholes Option Pricing
-C_BS, p, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
+C_BS, P_BS, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
 print(C_BS)
 
 
@@ -91,7 +90,7 @@ print (C_COS)
 
 
 # In[6]: COS with Fang & Oosterlee (2008) Version of Heston's Characteristic Function
-charactersticFunctionFOH = func.charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
+charactersticFunctionHFO = func.charFuncHestonFO(mu, r, u, tau, sigma, v_bar, lm, rho, volvol)
 
 C_COS_HFO = np.zeros((np.size(K)))
 P_COS_HFO = np.zeros((np.size(K)))
@@ -100,7 +99,7 @@ C_COS_PCP = np.zeros((np.size(K)))
 for m in range(0, np.size(K)):
     x  = np.log(S0/K[m])
     addIntegratedTerm = np.exp(1j * k * np.pi * (x-a)/bma)
-    Fk = np.real(charactersticFunctionFOH * addIntegratedTerm)
+    Fk = np.real(charactersticFunctionHFO * addIntegratedTerm)
     Fk[0] = 0.5 * Fk[0]						
     C_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkCall)) * np.exp(-r * tau)
     P_COS_HFO[m] = K[m] * np.sum(np.multiply(Fk, UkPut)) * np.exp(-r * tau)
