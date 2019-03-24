@@ -16,37 +16,40 @@ import AllFunctions as func
 import matplotlib.pyplot as plt
 
 
-# In[2]: Import data from quandl
+# In[2]: Data
+# Import from quandl
 quandl.ApiConfig.api_key = "mrMTRoAdPycJSyzyjxPN"
 ticker = "AAPL"
 database = "EOD"
-ID = database + "/" + ticker
-stock_data = quandl.get(ID, rows = 500)
-log_ret = np.log(stock_data.Close) - np.log(stock_data.Close.shift(1))
-log_ret.drop(log_ret.index[:1], inplace = True)
+identifier = database + "/" + ticker
+stockData = quandl.get(identifier, rows = 500)
 
-mean_data = np.mean(log_ret)
-var_data = np.var(log_ret)
-sd_data = np.sqrt(var_data)
-stock_today = stock_data.Close.tail(1)
+# Return and Volatility
+logReturn = np.log(stockData.Close) - np.log(stockData.Close.shift(1))
+logReturn.drop(logReturn.index[:1], inplace = True)
+tradingDaysCount= 252
+annualisedMean = np.mean(logReturn) * tradingDaysCount
+annualisedVariance = np.var(logReturn) * tradingDaysCount
+annualisedStdDev = np.sqrt(annualisedVariance)
+lastPrice = stockData.Close.tail(1)
 
 
 # In[2]: Parameter
 # Volvol and rho according to Fang, 2010, p. 30
-r       = 0          # Risk-free rate
-mu      = mean_data  # Mean rate of drift
-sigma   = sd_data    # Initial Vola of underyling at time 0; also called u0 or a
-S0      = int(stock_today)  # Today's stock price
-tau     = 30 / 365   # Time to expiry in years
-q       = 0          # Divindend Yield
-lm      = 1.5768     # The speed of mean reversion
-v_bar   = var_data   # Mean level of variance of the underlying
-volvol  = 0.5751     # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
-rho     = -0.5711    # Covariance between the log stock and the variance process
+r      = 0                  # assumption Risk-free rate
+mu     = r #annualisedMean     # Mean rate of drift
+sigma  = annualisedStdDev   # Initial Vola of underyling at time 0; also called u0 or a
+S0     = lastPrice [0]         # Today's stock price
+tau    = 30 / 365           # Time to expiry in years
+q      = 0                  # Divindend Yield
+lm     = 1.5768             # The speed of mean reversion
+v_bar  = annualisedVariance # Mean level of variance of the underlying
+volvol =  0.5751             # Volatility of the volatiltiy process (if 0 then constant Vol like BS)
+rho    = -0.5711            # Covariance between the log stock and the variance process
 
 # Range of Strikes
-mini    = int(stock_today * 0.8)
-maxi    = int(stock_today * 1.2)
+mini    = int(S0 * 0.8)
+maxi    = int(S0 * 1.2)
 K       = np.arange(mini, maxi, dtype = np.float)
 
 # Truncation Range
@@ -64,11 +67,11 @@ u       = k * np.pi/bma
 
 # In[3]: Black Scholes Option Pricing
 C_BS, p, d1, d2 = func.blackScholes(S0, K, r, tau, sigma, q)
-print (C_BS)
+print(C_BS)
 
 
 # In[4]: COS-FFT Value Function for Put
-UkPut = 2 / bma * ( func.cosSer1(a,b,a,0,k) - func.cosSerExp(a,b,a,0,k) )
+UkPut  = 2 / bma * ( func.cosSer1(a,b,a,0,k) - func.cosSerExp(a,b,a,0,k) )
 UkCall = 2 / bma * ( func.cosSerExp(a,b,0,b,k) - func.cosSer1(a,b,0,b,k) )
 
 
