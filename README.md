@@ -284,7 +284,7 @@ print(C_COS_PCP)
 ## <div id="F2"> <a href="#0">Results  </a> </div>
 
 ### Plot ###
-To visualise the results, we plot the option prices.
+To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis).
 
 <details> <summary>Click to see the code</summary> <p>
 
@@ -296,13 +296,15 @@ print("C_BS = green, C_COS = blue, C_COS_HFO = red")
 ```
 </details> </p>
 
-![Image](/img.jpg?raw=true "Plot")
 
-
+<div align="center">
+    <img src="/img.png" width = "400px" </img> 
+</div>
 
 
 ## <div id="G2"> <a href="#0">Concluding remarks  </a> </div>
-As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices. We observed this phenomenon ourselves when comparing the results from our COS-Heston calculations to the Black-Scholes option prices.
+This project was rather technical and it took a lot of effort to get all formulas correct. However, once running, the COS-FFT method combined with the Heston model provides a powerful tool to price many options with very high efficiency. In a next step, it would also be interesting to value other options such as digital or barrier options. <br>
+There is also some criticism on this method. As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices. We observed this phenomenon ourselves when comparing the results from our COS-Heston calculations to the Black-Scholes option prices.
 
 ## <div id="H2"> <a href="#0">References  </a> </div>
 
@@ -311,15 +313,3 @@ Fang, F. & Oosterlee, K. (2008). *A Novel Pricing Method for European Options Ba
 Fitt, A., Norbury, J., Ockendon, H. & Wilson, E. (2010). *Progress in Industrial Mathematics at ECMI 2008*. Springer Berlin. <br>
 Heston, S. (1993). *A Closed-Form Solution for Options with Stochastic Volatility with Applications to Bond and Currency Options*. <br>
 Wang, C. (2017). *Pricing European Options by Stable Fourier-Cosine Series Expansions*. <br>
-
-### Sample equation ###
-![equation](http://latex.codecogs.com/gif.latex?C(S,&space;t)&space;=&space;S\Phi&space;d_1&space;-&space;Ke^{-r(t-t)}\Phi&space;d_2) <br>
-
-### Sample subsection ###
-<details> <summary>Click to see the code</summary> <p>
-    
-```python
-    
-```
-
-</details> </p>
