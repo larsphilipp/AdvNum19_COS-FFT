@@ -112,7 +112,7 @@ u       = k * np.pi/bma
 </details> </p>
 
 ### Truncation range ###
-The choice of the truncation range can be essential for the pricing of the options. We figured out that our initial range determination (simply a multiple of the time-to-maturity adjusted standard deviation) delivered an unsatifying ouput for example for low volality. Hence we decided to check for another approach and implemented a more sopisticated determination of the truncation range as presented in Fitt et al. (2010). <br> <br>
+The choice of the truncation range can be essential for the pricing of the options. We figured out that our initial range determination (simply a multiple of the time-to-maturity adjusted standard deviation) delivered an unsatifying ouput for example for low volality. Hence we decided to check for another approach and implemented a more sopisticated determination of the truncation range as presented in Fitt et al. (2010). <br>
 
 For the exact derivation of our Python code, please see Fitt et al. (2010, p. 836).
 
@@ -286,7 +286,6 @@ print(C_COS_PCP)
 
 ## <div id="F2"> <a href="#0">Results  </a> </div>
 
-### Plot ###
 To visualise the results, we plot the option prices (y-axis) compared to the strike prices (x-axis). The standard and the COS-Black-Scholes prices are identical. One can see that especially at-the-money call option prices under Heston exceed the ones using the Black Scholes characterstic function. A comparison is difficult as some of the Heston input parameters were simply taken from the Fang & Oosterle (2008) paper and might not represent accurate estimates for our underlying. It seems that the shift from constant volatility (Black Scholes) to stochastic volatility (Heston) causes the vega-sensitive options to increase in price.
 
 <details> <summary>Click to see the code</summary> <p>
