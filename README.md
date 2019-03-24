@@ -306,7 +306,7 @@ print("C_BS = green, C_COS = blue, C_COS_HFO = red")
 
 ## <div id="G2"> <a href="#0">Concluding remarks  </a> </div>
 This project was rather technical and it took a lot of effort to get all formulas correct. However, once running, the COS-FFT method combined with the Heston model provides a powerful tool to price many options with very high efficiency. In a next step, it would also be interesting to value other options such as digital or barrier options. <br>
-There is also some criticism on this method. As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/), limitations in the COS method are inaccuracy for very small prices.
+There is also some criticism on this method. As mentioned in this [Blog entry](https://chasethedevil.github.io/post/the-cos-method-for-heston/) and observed when testing this code, a limitation in the COS method is the inaccuracy for high strike calls.
 
 ## <div id="H2"> <a href="#0">References  </a> </div>
 
